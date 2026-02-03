@@ -60,3 +60,45 @@ public class TasksController : ControllerBase
         return NoContent();
     }
 }
+
+[HttpPost]
+public async Task<IActionResult> Create(CreateTaskDto dto)
+{
+    if (!ModelState.IsValid)
+        return BadRequest(ModelState);
+
+    var task = new TaskItem
+    {
+        Title = dto.Title,
+        Description = dto.Description,
+        DueDate = dto.DueDate,
+        Priority = dto.Priority,
+        Status = dto.Status
+    };
+
+    var createdTask = await _service.CreateAsync(task);
+    return CreatedAtAction(nameof(GetById), new { id = createdTask.Id }, createdTask);
+}
+
+[HttpPut("{id}")]
+public async Task<IActionResult> Update(int id, UpdateTaskDto dto)
+{
+    if (!ModelState.IsValid)
+        return BadRequest(ModelState);
+
+    var task = new TaskItem
+    {
+        Title = dto.Title,
+        Description = dto.Description,
+        DueDate = dto.DueDate,
+        Priority = dto.Priority,
+        Status = dto.Status
+    };
+
+    var updated = await _service.UpdateAsync(id, task);
+    if (!updated)
+        return NotFound();
+
+    return NoContent();
+}
+
